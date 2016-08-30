@@ -1,0 +1,61 @@
+syntax = "proto3";
+package news;
+
+service NewsServer {
+    rpc GetNews(GetNewsRequest) returns (GetNewsReply) {}
+    rpc GetMyNews(GetNewsRequest) returns (GetNewsReply) {}
+    rpc PostNews(PostNewsRequest) returns (PsotNewsReply) {}
+    rpc RecallNews(RecallNewsRequest) returns (RecallNewsReply) {}
+    rpc LikeNews(LikeNewsRequest) returns (LikeNewsReply) {}
+    rpc ForwardNews(ForwardNewsRequest) returns (ForwardNewsReply) {}
+}
+
+message MeipaiInfo {
+    string MPid = 1;
+    string Title = 2;
+    bytes Pic = 3;
+}
+
+message GetNewsRequest {
+    string Uid = 1;
+    uint64 Index = 2;
+}
+message GetNewsReply {
+    string Status = 1;
+    uint64 Index = 2;
+    repeated MeipaiInfo Meipais = 3;
+}
+
+message PostNewsRequest {
+    string Uid = 1;
+    string Devid = 2;
+    string TimeStamp = 3;
+}
+message PsotNewsReply {
+    string Status = 1;
+}
+
+message RecallNewsRequest {
+    string MPid = 1;
+}
+message RecallNewsReply {
+    string Status = 1;
+}
+
+message LikeNewsRequest {
+    string Uid = 1;
+    string MPid = 2;
+}
+message LikeNewsReply {
+    string Status = 1;
+}
+
+message ForwardNewsRequest {
+    string MPid = 1;
+    string Uid = 2;
+    string Devid = 3;
+    string TimeStamp = 4;
+}
+message ForwardNewsReply {
+    string Status = 1;
+}

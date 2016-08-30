@@ -1,0 +1,61 @@
+syntax = "proto3";
+package profile;
+
+service MPServer{
+    rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoReply) {};
+    rpc GetFans(GetFansRequest) returns (GetFansReply) {};
+    rpc GetFollow(GetFollowRequest) returns (GetFollowReply) {};
+    rpc AddFollow(AddFollowRequest) returns (AddFollowReply) {};
+    rpc DeleteFollow(DeleteFollowRequest) returns (DeleteFollowReply) {};
+}
+
+message UserInfo {
+    string Uid = 1;
+    string Name = 2;
+    bytes Pic = 3;
+    int32 FansNum = 4;
+    int32 FollowNum = 5;
+    int32 MeipaiNum = 6;
+}
+
+message GetUserInfoRequest {
+    string Uid = 1;
+}
+message GetUserInfoReply {
+    string Status = 1;
+    UserInfo Info = 2;
+}
+
+message GetFansRequest {
+    string Uid = 1;
+    uint64 Index = 2;
+}
+message GetFansReply {
+    string Status = 1;
+    uint64 Index = 2;
+    repeated UserInfo Fanss = 3;
+}
+
+message AddFollowRequest {
+    string Uid = 1;
+}
+message AddFollowReply {
+    string Status = 1;
+}
+
+message DeleteFollowRequest {
+    string Uid = 1;
+}
+message DeleteFollowReply {
+    string Status = 1;
+}
+
+message GetFollowRequest {
+    string Uid = 1;
+    uint64 Index = 2;
+}
+message GetFollowReply {
+    string Status = 1;
+    uint64 Index = 2;
+    repeated UserInfo Follows = 3;
+}
