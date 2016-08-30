@@ -1,4 +1,4 @@
-package redis
+package redism
 
 import (
 	"hash/crc32"
@@ -47,7 +47,7 @@ func builder(address string, conf RedismConf) *redis.Pool {
 	}
 }
 
-func NewRedis(conf RedismConf) Redism {
+func NewRedism(conf RedismConf) Redism {
 	redism := new(redism)
 	redism.redisPoolMaster = make([]*redis.Pool, len(conf.Masters))
 	redism.redisPoolSlave = make([]([]*redis.Pool), len(conf.Masters))
