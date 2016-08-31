@@ -8,21 +8,21 @@ import (
 )
 
 type Redism interface {
-	Get(opt, key string) redis.Conn
+	Get(name, opt, key string) redis.Conn
 	Close() error
 }
 
 type redism struct {
-	redisPoolMaster []*redis.Pool
-	redisPoolSlave  [][]*redis.Pool
+	redisPoolMaster map[string]([]*redis.Pool)
+	redisPoolSlave  map[string]([][]*redis.Pool)
 }
 type RedismConf struct {
 	Maxactive   int
 	Maxidle     int
 	Idletimeout int
 	//storge the address in the array
-	Masters []string
-	Slaves  [][]string
+	Masters map[string]([]string)
+	Slaves  map[string]([][]string)
 }
 
 func builder(address string, conf RedismConf) *redis.Pool {
@@ -48,47 +48,52 @@ func builder(address string, conf RedismConf) *redis.Pool {
 }
 
 func NewRedism(conf RedismConf) Redism {
-	redism := new(redism)
-	redism.redisPoolMaster = make([]*redis.Pool, len(conf.Masters))
-	redism.redisPoolSlave = make([]([]*redis.Pool), len(conf.Masters))
-
-	for i, v := range conf.Masters {
-		redism.redisPoolMaster[i] = builder(v, conf)
-		redism.redisPoolSlave[i] = make([]*redis.Pool, len(conf.Slaves[i]))
-		for j, vv := range conf.Slaves[i] {
-			redism.redisPoolSlave[i][j] = builder(vv, conf)
+	rm := new(redism)
+	rm.redisPoolMaster = make(map[string]([]*redis.Pool))
+	rm.redisPoolSlave = make(map[string]([][]*redis.Pool))
+	for name, _ := range conf.Masters { //this for-loop get the server name to identifi different redis
+		rm.redisPoolMaster[name] = make([]*redis.Pool, len(conf.Masters[name]))
+		for i, v := range conf.Masters[name] { // this for-loop
+			rm.redisPoolMaster[name][i] = builder(v, conf)
+			rm.redisPoolSlave[name][i] = make([]*redis.Pool, len(conf.Slaves[name][i]))
+			for j, vv := range conf.Slaves[name][i] {
+				rm.redisPoolSlave[name][i][j] = builder(vv, conf)
+			}
 		}
 	}
-
-	return redism
+	return rm
 }
 
-func (r *redism) Get(opt, key string) redis.Conn {
-	if len(r.redisPoolSlave) == 0 {
+func (r *redism) Get(name, opt, key string) redis.Conn {
+	if len(r.redisPoolSlave[name]) == 0 {
 		opt = "W"
 	}
 	if opt == "R" {
 		hash := crc32.ChecksumIEEE([]byte(key))
-		i := hash % uint32(len(r.redisPoolMaster))
-		index := hash % uint32(len(r.redisPoolSlave[i]))
-		c := r.redisPoolSlave[i][index].Get()
+		i := hash % uint32(len(r.redisPoolMaster[name]))
+		index := hash % uint32(len(r.redisPoolSlave[name][i]))
+		c := r.redisPoolSlave[name][i][index].Get()
 		return c
 	}
 
 	hash := crc32.ChecksumIEEE([]byte(key))
-	i := hash % uint32(len(r.redisPoolMaster))
-	c := r.redisPoolMaster[i].Get()
+	i := hash % uint32(len(r.redisPoolMaster[name]))
+	c := r.redisPoolMaster[name][i].Get()
 	return c
 }
 
 func (r *redism) Close() error {
-	var err error = nil
+	var err error
 	for _, v := range r.redisPoolMaster {
-		err = v.Close()
+		for _, vv := range v {
+			err = vv.Close()
+		}
 	}
 	for _, v := range r.redisPoolSlave {
 		for _, vv := range v {
-			err = vv.Close()
+			for _, vvv := range vv {
+				err = vvv.Close()
+			}
 		}
 	}
 	return err
