@@ -4,16 +4,17 @@ package news;
 service NewsServer {
     rpc GetNews(GetNewsRequest) returns (GetNewsReply) {}
     rpc GetMyNews(GetNewsRequest) returns (GetNewsReply) {}
-    rpc PostNews(PostNewsRequest) returns (PsotNewsReply) {}
+    rpc PostNews(PostNewsRequest) returns (PostNewsReply) {}
     rpc RecallNews(RecallNewsRequest) returns (RecallNewsReply) {}
     rpc LikeNews(LikeNewsRequest) returns (LikeNewsReply) {}
-    rpc ForwardNews(ForwardNewsRequest) returns (ForwardNewsReply) {}
 }
 
-message MeipaiInfo {
-    string MPid = 1;
-    string Title = 2;
-    bytes Pic = 3;
+message NewsInfo{
+    string Uid = 1;
+    int32 Likes = 2;
+    int32 Fowards = 3;
+    string MeipaiID = 4;
+    bytes Values = 5;
 }
 
 message GetNewsRequest {
@@ -21,41 +22,33 @@ message GetNewsRequest {
     uint64 Index = 2;
 }
 message GetNewsReply {
-    string Status = 1;
+    int32 Status = 1;
     uint64 Index = 2;
-    repeated MeipaiInfo Meipais = 3;
+    repeated NewsInfo News = 3;
 }
 
 message PostNewsRequest {
     string Uid = 1;
     string Devid = 2;
     string TimeStamp = 3;
+    string MeipaiID = 4;
+    bytes Values = 5;
 }
-message PsotNewsReply {
-    string Status = 1;
+message PostNewsReply {
+    int32 Status = 1;
+    string Newsid = 2;
 }
 
 message RecallNewsRequest {
-    string MPid = 1;
+    string Newsid= 1;
 }
 message RecallNewsReply {
-    string Status = 1;
+    int32 Status = 1;
 }
 
 message LikeNewsRequest {
-    string Uid = 1;
-    string MPid = 2;
+    string Newsid = 1;
 }
 message LikeNewsReply {
-    string Status = 1;
-}
-
-message ForwardNewsRequest {
-    string MPid = 1;
-    string Uid = 2;
-    string Devid = 3;
-    string TimeStamp = 4;
-}
-message ForwardNewsReply {
-    string Status = 1;
+    int32 Status = 1;
 }

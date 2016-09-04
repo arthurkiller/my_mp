@@ -1,6 +1,7 @@
 package redism
 
 import (
+	"fmt"
 	"hash/crc32"
 	"time"
 
@@ -9,12 +10,14 @@ import (
 
 type Redism interface {
 	Get(name, opt, key string) redis.Conn
+	GetScript(key string) *redis.Script
 	Close() error
 }
 
 type redism struct {
 	redisPoolMaster map[string]([]*redis.Pool)
 	redisPoolSlave  map[string]([][]*redis.Pool)
+	scripts         map[string]*redis.Script
 }
 type RedismConf struct {
 	Maxactive   int
@@ -35,7 +38,7 @@ func builder(address string, conf RedismConf) *redis.Pool {
 			if err != nil {
 				return nil, err
 			}
-			return c, err
+			return c, nil
 		},
 		TestOnBorrow: func(c redis.Conn, t time.Time) error {
 			if time.Since(t) < time.Minute {
@@ -61,6 +64,41 @@ func NewRedism(conf RedismConf) Redism {
 			}
 		}
 	}
+	//TODO: add the lua script here
+	rm.scripts["uid-check-fans"] = redis.NewScript(2, fmt.Sprintf(`
+		local count = 1
+		local length = tonumber(KEYS[2])
+		local result = {}
+		for i = 1, length do
+		local val = tonumber(redis.call("SISMEMBER", tostring(KEYS[1]),tostring(ARGV[i])))
+			if val == 1 then
+			result[count] = tostring(ARGV[i])
+			count = count + 1
+			end
+		end
+		return result
+	`))
+
+	rm.scripts["newsid-get-news"] = redis.NewScript(1, fmt.Sprintf(`
+		local length = tonumber(KEYS[1])
+		local result = {}
+			for i = 1, length do
+			local val = redis.call("HGETALL",tostring(ARGV[i]))
+			result[i] = val
+			end
+		return result
+	`))
+
+	rm.scripts["uid-put-news"] = redis.NewScript(2, fmt.Sprintf(`
+		local count = 1
+		local length = tonumber(KEYS[2])
+		locla result = {}
+		for i = 1, length do
+			redis.call("LPUSH",ARGV[i],KEYS[1])
+		end
+	`))
+	// ++ put newsinfo into uids... box
+
 	return rm
 }
 
@@ -80,6 +118,10 @@ func (r *redism) Get(name, opt, key string) redis.Conn {
 	i := hash % uint32(len(r.redisPoolMaster[name]))
 	c := r.redisPoolMaster[name][i].Get()
 	return c
+}
+
+func (r *redism) GetScript(key string) *redis.Script {
+	return r.scripts[key]
 }
 
 func (r *redism) Close() error {
