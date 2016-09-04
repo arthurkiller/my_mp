@@ -1,7 +1,7 @@
 syntax = "proto3";
 package profile;
 
-service MPServer{
+service Profile{
     rpc GetUserInfo(GetUserInfoRequest) returns (GetUserInfoReply) {};
     rpc GetFans(GetFansRequest) returns (GetFansReply) {};
     rpc GetFollow(GetFollowRequest) returns (GetFollowReply) {};

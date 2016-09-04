@@ -1,7 +1,7 @@
 syntax = "proto3";
 package news;
 
-service NewsServer {
+service News{
     rpc GetNews(GetNewsRequest) returns (GetNewsReply) {}
     rpc GetMyNews(GetNewsRequest) returns (GetNewsReply) {}
     rpc PostNews(PostNewsRequest) returns (PostNewsReply) {}
