@@ -54,16 +54,22 @@ func NewRedism(conf RedismConf) Redism {
 	rm := new(redism)
 	rm.redisPoolMaster = make(map[string]([]*redis.Pool))
 	rm.redisPoolSlave = make(map[string]([][]*redis.Pool))
-	for name, _ := range conf.Masters { //this for-loop get the server name to identifi different redis
+
+	for name := range conf.Masters { //this for-loop get the server name to identifi different redis
 		rm.redisPoolMaster[name] = make([]*redis.Pool, len(conf.Masters[name]))
-		for i, v := range conf.Masters[name] { // this for-loop
+
+		for i, v := range conf.Masters[name] { // this for-loop used to build the master redis pool
 			rm.redisPoolMaster[name][i] = builder(v, conf)
-			rm.redisPoolSlave[name][i] = make([]*redis.Pool, len(conf.Slaves[name][i]))
+			rm.redisPoolSlave[name] = make([][]*redis.Pool, len(conf.Slaves[name]))
+
 			for j, vv := range conf.Slaves[name][i] {
+				rm.redisPoolSlave[name][i] = make([]*redis.Pool, len(conf.Slaves[name][i]))
 				rm.redisPoolSlave[name][i][j] = builder(vv, conf)
 			}
 		}
 	}
+
+	rm.scripts = make(map[string]*redis.Script, 4)
 	//TODO: add the lua script here
 	rm.scripts["uid-check-fans"] = redis.NewScript(2, fmt.Sprintf(`
 		local count = 1
@@ -97,7 +103,6 @@ func NewRedism(conf RedismConf) Redism {
 			redis.call("LPUSH",ARGV[i],KEYS[1])
 		end
 	`))
-	// ++ put newsinfo into uids... box
 
 	return rm
 }
