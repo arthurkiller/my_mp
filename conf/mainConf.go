@@ -1,5 +1,6 @@
 package conf
 
+//make the conf struct
 type Config struct {
 	NewsServerAddr    string
 	ProfileServerAddr string
