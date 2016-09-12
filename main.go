@@ -1,10 +1,14 @@
 package main
 
 import (
+	"flag"
+	"fmt"
 	"log"
 	"net"
+	"net/http"
 	"os"
 	"os/signal"
+	"runtime"
 	"syscall"
 
 	"github.com/arthurkiller/my_mp/conf"
@@ -17,10 +21,13 @@ import (
 )
 
 func main() {
+	pprof := flag.Bool("pprof", false, "set if turn on the pprof")
+	flag.Parse()
+
 	//gen the config
 	conf := conf.Config{
-		NewsServerAddr:    "127.0.0.1:23488",
-		ProfileServerAddr: "127.0.0.1:23489",
+		NewsServerAddr:    "127.0.0.1:23588",
+		ProfileServerAddr: "127.0.0.1:23589",
 
 		UIDInfo:  []string{"127.0.0.1:16380"},
 		UIDInfoS: [][]string{{"127.0.0.1:16380"}},
@@ -41,7 +48,7 @@ func main() {
 		UIDFansS: [][]string{{"127.0.0.1:16385"}},
 
 		UIDFollow:  []string{"127.0.0.1:16386"},
-		UIDFollowS: [][]string{{"127.0.0.1:166386"}},
+		UIDFollowS: [][]string{{"127.0.0.1:16386"}},
 
 		Maxactive:   500,
 		Maxidle:     300,
@@ -77,6 +84,22 @@ func main() {
 
 	//makeup the redis connetion pool manager
 	redispool := redism.NewRedism(redisConf)
+
+	//set up the pprof server
+	if *pprof {
+		runtime.SetBlockProfileRate(1)
+		lis, err := net.Listen("tcp", ":6062")
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println("server profiling address: ", lis.Addr())
+		go func() {
+			if err := http.Serve(lis, nil); err != nil {
+				fmt.Println(err)
+				return
+			}
+		}()
+	}
 
 	//startup the server
 	newsconn, err := net.Listen("tcp", conf.NewsServerAddr)

@@ -10,12 +10,11 @@ service Profile{
 }
 
 message UserInfo {
-    string Uid = 1;
-    string Name = 2;
-    bytes Pic = 3;
-    int32 FansNum = 4;
-    int32 FollowNum = 5;
-    int32 MeipaiNum = 6;
+    string Name = 1;
+    bytes Pic = 2;
+    int32 FansNum = 3;
+    int32 FollowNum = 4;
+    int32 MeipaiNum = 5;
 }
 
 message GetUserInfoRequest {
