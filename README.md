@@ -1,6 +1,9 @@
-* my meipai project
-this project is just for an exercise
+# my meipai project [![Build Status](https://travis-ci.org/arthurkiller/my_mp.svg?branch=master)](https://travis-ci.org/arthurkiller/my_mp)
+
+this project is just for an exercise!
+
+---
 there are two main feature 
-    the friend circle
-    the sttatus count
+    * the friend circle
+    * the status count
 I am trying to study how to construct a big project
