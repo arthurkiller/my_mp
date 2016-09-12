@@ -6,7 +6,7 @@ import (
 	"github.com/arthurkiller/my_mp/db"
 	"github.com/arthurkiller/my_mp/grpc/profile"
 	"github.com/garyburd/redigo/redis"
-	context "golang.org/x/net/context"
+	"golang.org/x/net/context"
 )
 
 //TODO: SCAN returns may not shorter than the array given to the redis.Scan()

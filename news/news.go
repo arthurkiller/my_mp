@@ -8,7 +8,7 @@ import (
 	"github.com/arthurkiller/my_mp/db"
 	"github.com/arthurkiller/my_mp/grpc/news"
 	"github.com/garyburd/redigo/redis"
-	context "golang.org/x/net/context"
+	"golang.org/x/net/context"
 )
 
 type NewsServer interface {
