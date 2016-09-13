@@ -4,8 +4,19 @@ import (
 	"context"
 	"testing"
 
+	"google.golang.org/grpc"
+
 	"github.com/arthurkiller/my_mp/grpc/profile"
 )
+
+func Makec() (profile.ProfileClient, error) {
+	conn, err := grpc.Dial("127.0.0.1:23589", grpc.WithInsecure())
+	if err != nil {
+		return nil, err
+	}
+	cli := profile.NewProfileClient(conn)
+	return cli, nil
+}
 
 func Test_GetUserInfo(t *testing.T) {
 	cli, err := Makec()
@@ -84,4 +95,50 @@ func Test_DeleteFollow(t *testing.T) {
 		t.Error(err)
 	}
 	t.Log(result)
+}
+
+func Benchmark_GetUserInfo(b *testing.B) {
+	cli, err := Makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := profile.GetUserInfoRequest{"a1"}
+	for i := 0; i < b.N; i++ {
+		_, err = cli.GetUserInfo(context.Background(), &req)
+		if err != nil {
+			b.Error(err)
+		}
+	}
+}
+
+func Benchmark_GetFans(b *testing.B) {
+	cli, err := Makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := profile.GetFansRequest{
+		Uid: "a1",
+	}
+	for i := 0; i < b.N; i++ {
+		_, err = cli.GetFans(context.Background(), &req)
+		if err != nil {
+			b.Error(err)
+		}
+	}
+}
+
+func Benchmark_GetFollow(b *testing.B) {
+	cli, err := Makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := profile.GetFollowRequest{
+		Uid: "a1",
+	}
+	for i := 0; i < b.N; i++ {
+		_, err = cli.GetFollow(context.Background(), &req)
+		if err != nil {
+			b.Error(err)
+		}
+	}
 }
