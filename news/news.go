@@ -55,6 +55,7 @@ func (s *newsServer) GetNews(ctx context.Context, req *news.GetNewsRequest) (*ne
 	newsMap := make(map[string]*news.NewsInfo, 0)
 	for i, v := range newsidList {
 		conn = s.redisPoll.Get("newsid-info", "R", v)
+		defer conn.Close()
 		newsinf := new(news.NewsInfo)
 		vs, _ := redis.Values(conn.Do("HGETALL", v))
 		err = redis.ScanStruct(vs, &newsinf)
@@ -68,6 +69,7 @@ func (s *newsServer) GetNews(ctx context.Context, req *news.GetNewsRequest) (*ne
 
 	//check the fans-uid list
 	conn = s.redisPoll.Get("uid-fans", "R", req.Uid)
+	defer conn.Close()
 	scr := s.redisPoll.GetScript("uid-check-fans")
 	var keyargs []interface{}
 	//construct the args of script
@@ -161,11 +163,12 @@ func (s *newsServer) PostNews(ctx context.Context, req *news.PostNewsRequest) (*
 	}
 
 	//TODO this should have a cache
-	conn = s.redisPoll.Get("uid-fans", "R", req.Uid)
+	connf := s.redisPoll.Get("uid-fans", "R", req.Uid)
+	defer connf.Close()
 	index := int64(0)
 	uidList := make([]string, 0, 100)
 	for {
-		v, err := redis.Values(conn.Do("SSCAN", req.Uid, index, "COUNT", 100))
+		v, err := redis.Values(connf.Do("SSCAN", req.Uid, index, "COUNT", 100))
 		if err != nil {
 			log.Println("error in do redis get user fans sscan:", err)
 			return &news.PostNewsReply{Status: 1}, err
