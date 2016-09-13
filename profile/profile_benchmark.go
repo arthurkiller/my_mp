@@ -9,7 +9,7 @@ import (
 	"github.com/arthurkiller/my_mp/grpc/profile"
 )
 
-func makec() (profile.ProfileClient, error) {
+func Makec() (profile.ProfileClient, error) {
 	conn, err := grpc.Dial("127.0.0.1:23589", grpc.WithInsecure())
 	if err != nil {
 		return nil, err
@@ -18,8 +18,8 @@ func makec() (profile.ProfileClient, error) {
 	return cli, nil
 }
 
-func Benchmark_GetUserInfo(t *testing.B) {
-	cli, err := makec()
+func BenchmarkGetUserInfo(t *testing.B) {
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
@@ -32,8 +32,8 @@ func Benchmark_GetUserInfo(t *testing.B) {
 	}
 }
 
-func Benchmark_GetFans(t *testing.B) {
-	cli, err := makec()
+func BenchmarkGetFans(t *testing.B) {
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
@@ -48,8 +48,8 @@ func Benchmark_GetFans(t *testing.B) {
 	}
 }
 
-func Benchmark_GetFollow(t *testing.B) {
-	cli, err := makec()
+func BenchmarkGetFollow(t *testing.B) {
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
@@ -65,7 +65,7 @@ func Benchmark_GetFollow(t *testing.B) {
 }
 
 //func Benchmark_AddFollow(t *testing.B) {
-//	cli, err := makec()
+//	cli, err := Makec()
 //	if err != nil {
 //		t.Error(err)
 //	}
@@ -82,7 +82,7 @@ func Benchmark_GetFollow(t *testing.B) {
 //}
 //
 //func Benchmark_DeleteFollow(t *testing.B) {
-//	cli, err := makec()
+//	cli, err := Makec()
 //	if err != nil {
 //		t.Error(err)
 //	}

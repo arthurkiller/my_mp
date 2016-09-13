@@ -8,11 +8,13 @@ import (
 )
 
 func Test_GetUserInfo(t *testing.T) {
-	cli, err := makec()
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
-	req := profile.GetUserInfoRequest{}
+	req := profile.GetUserInfoRequest{
+		Uid: "a1",
+	}
 	result, err := cli.GetUserInfo(context.Background(), &req)
 	if err != nil {
 		t.Error(err)
@@ -21,11 +23,14 @@ func Test_GetUserInfo(t *testing.T) {
 }
 
 func Test_GetFans(t *testing.T) {
-	cli, err := makec()
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
-	req := profile.GetFansRequest{}
+	req := profile.GetFansRequest{
+		Uid:   "a1",
+		Index: 0,
+	}
 	result, err := cli.GetFans(context.Background(), &req)
 	if err != nil {
 		t.Error(err)
@@ -34,11 +39,14 @@ func Test_GetFans(t *testing.T) {
 }
 
 func Test_GetFollow(t *testing.T) {
-	cli, err := makec()
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
-	req := profile.GetFollowRequest{}
+	req := profile.GetFollowRequest{
+		Uid:   "a1",
+		Index: 0,
+	}
 	result, err := cli.GetFollow(context.Background(), &req)
 	if err != nil {
 		t.Error(err)
@@ -47,11 +55,14 @@ func Test_GetFollow(t *testing.T) {
 }
 
 func Test_AddFollow(t *testing.T) {
-	cli, err := makec()
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
-	req := profile.AddFollowRequest{}
+	req := profile.AddFollowRequest{
+		Uid:     "a1",
+		DestUid: "c4",
+	}
 	result, err := cli.AddFollow(context.Background(), &req)
 	if err != nil {
 		t.Error(err)
@@ -60,11 +71,14 @@ func Test_AddFollow(t *testing.T) {
 }
 
 func Test_DeleteFollow(t *testing.T) {
-	cli, err := makec()
+	cli, err := Makec()
 	if err != nil {
 		t.Error(err)
 	}
-	req := profile.DeleteFollowRequest{}
+	req := profile.DeleteFollowRequest{
+		Uid:     "a1",
+		DestUid: "c4",
+	}
 	result, err := cli.DeleteFollow(context.Background(), &req)
 	if err != nil {
 		t.Error(err)

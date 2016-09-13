@@ -50,8 +50,8 @@ func main() {
 		UIDFollow:  []string{"127.0.0.1:16386"},
 		UIDFollowS: [][]string{{"127.0.0.1:16386"}},
 
-		Maxactive:   500,
-		Maxidle:     300,
+		Maxactive:   5000,
+		Maxidle:     3000,
 		Idletimeout: 60,
 	}
 
