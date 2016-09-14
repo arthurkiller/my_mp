@@ -11,6 +11,7 @@ import (
 	"golang.org/x/net/context"
 )
 
+//NewsServer provide the function about grpc port which is supported by newsm
 type NewsServer interface {
 	GetNews(context.Context, *news.GetNewsRequest) (*news.GetNewsReply, error)
 	GetMyNews(context.Context, *news.GetNewsRequest) (*news.GetNewsReply, error)
@@ -23,6 +24,7 @@ type newsServer struct {
 	redisPoll redism.Redism
 }
 
+//NewNewsServer generate a NewsServer interface for client
 func NewNewsServer(redisPoll redism.Redism) NewsServer {
 	server := new(newsServer)
 	server.redisPoll = redisPoll

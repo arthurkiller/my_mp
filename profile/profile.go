@@ -11,6 +11,7 @@ import (
 
 //TODO: SCAN returns may not shorter than the array given to the redis.Scan()
 
+// ProfileServer provide the service that profileserver support by grpc
 type ProfileServer interface {
 	GetUserInfo(context.Context, *profile.GetUserInfoRequest) (*profile.GetUserInfoReply, error)
 	GetFans(context.Context, *profile.GetFansRequest) (*profile.GetFansReply, error)
@@ -23,6 +24,7 @@ type profileServer struct {
 	redisPoll redism.Redism
 }
 
+//NewProfileServer generate a server client
 func NewProfileServer(redisPoll redism.Redism) ProfileServer {
 	server := new(profileServer)
 	server.redisPoll = redisPoll
