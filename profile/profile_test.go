@@ -142,3 +142,55 @@ func Benchmark_GetFollow(b *testing.B) {
 		}
 	}
 }
+func Benchmark_GetUserInfo_Parallel(b *testing.B) {
+	cli, err := Makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := profile.GetUserInfoRequest{"a1"}
+
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, err = cli.GetUserInfo(context.Background(), &req)
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	})
+}
+
+func Benchmark_GetFans_Parallel(b *testing.B) {
+	cli, err := Makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := profile.GetFansRequest{
+		Uid: "a1",
+	}
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, err = cli.GetFans(context.Background(), &req)
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	})
+}
+
+func Benchmark_GetFollow_Parallel(b *testing.B) {
+	cli, err := Makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := profile.GetFollowRequest{
+		Uid: "a1",
+	}
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, err = cli.GetFollow(context.Background(), &req)
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	})
+}

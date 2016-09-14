@@ -202,3 +202,62 @@ func Benchmark_PostNews(b *testing.B) {
 		}
 	}
 }
+func Benchmark_GetNews_Parallel(b *testing.B) {
+	cli, err := makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := news.GetNewsRequest{
+		Uid:   "a1",
+		Index: uint64(0),
+	}
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, err := cli.GetNews(context.Background(), &req)
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	})
+}
+
+func Benchmark_GetMyNews_Parallel(b *testing.B) {
+	cli, err := makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := news.GetNewsRequest{
+		Uid:   "a1",
+		Index: uint64(0),
+	}
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, err := cli.GetMyNews(context.Background(), &req)
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	})
+}
+
+func Benchmark_PostNews_Parallel(b *testing.B) {
+	cli, err := makec()
+	if err != nil {
+		b.Error(err)
+	}
+	req := news.PostNewsRequest{
+		Uid:       "a1",
+		Devid:     "iphone",
+		TimeStamp: fmt.Sprint(time.Now().UnixNano()),
+		MeipaiID:  "m1",
+		Values:    []byte("hello,world"),
+	}
+	b.RunParallel(func(pb *testing.PB) {
+		for pb.Next() {
+			_, err := cli.PostNews(context.Background(), &req)
+			if err != nil {
+				b.Error(err)
+			}
+		}
+	})
+}
