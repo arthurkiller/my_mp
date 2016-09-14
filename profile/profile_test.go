@@ -1,12 +1,11 @@
 package profilem
 
 import (
-	"context"
 	"testing"
 
-	"google.golang.org/grpc"
-
 	"github.com/arthurkiller/my_mp/grpc/profile"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 func Makec() (profile.ProfileClient, error) {

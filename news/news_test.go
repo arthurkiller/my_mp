@@ -1,14 +1,13 @@
 package newsm
 
 import (
-	"context"
 	"fmt"
 	"testing"
 	"time"
 
-	"google.golang.org/grpc"
-
 	"github.com/arthurkiller/my_mp/grpc/news"
+	"golang.org/x/net/context"
+	"google.golang.org/grpc"
 )
 
 func makec() (news.NewsClient, error) {
