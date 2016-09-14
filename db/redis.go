@@ -8,6 +8,7 @@ import (
 	"github.com/garyburd/redigo/redis"
 )
 
+//Redism define the function supported
 type Redism interface {
 	Get(name, opt, key string) redis.Conn
 	GetScript(key string) *redis.Script
@@ -19,6 +20,8 @@ type redism struct {
 	redisPoolSlave  map[string]([][]*redis.Pool)
 	scripts         map[string]*redis.Script
 }
+
+//RedismConf give out the configuration about redismconf
 type RedismConf struct {
 	Maxactive   int
 	Maxidle     int
@@ -50,6 +53,7 @@ func builder(address string, conf RedismConf) *redis.Pool {
 	}
 }
 
+//NewRedism generate a redism client
 func NewRedism(conf RedismConf) Redism {
 	rm := new(redism)
 	rm.redisPoolMaster = make(map[string]([]*redis.Pool))
