@@ -6,4 +6,7 @@ this project is just for an exercise!
 there are two main feature 
     * the friend circle
     * the status count
-I am trying to study how to construct a big project
+I am trying to study how to construct a big project~
+
+## TODO
+add the cache for the request
